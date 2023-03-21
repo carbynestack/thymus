@@ -1,3 +1,16 @@
+#
+# Copyright (c) 2023 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# IntelliJ
+.idea
+*.ipr
+*.iml
+*.iws
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -12,4 +25,4 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
