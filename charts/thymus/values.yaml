@@ -1,0 +1,381 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Thymus configuration
+thymus:
+
+  # The Istio Gateway configuration (enable only if used outside Carbyne Stack)
+  gateway:
+    enabled: false
+    metadata:
+      name: cs-service-gateway
+
+  # Create users
+  users:
+    enabled: false
+    data:
+      - name: Elon Musk
+        email: elon.musk@tesla.com
+        password: "2#Tv91*d-Z,M"
+      - name: Jeff Bezos
+        email: jeff.bezos@amazon.com
+        password: "86KIo6<]!/V="
+
+# Overrides for the Kratos subchart
+kratos:
+
+  # Kratos configuration (see https://www.ory.sh/docs/kratos/reference/configuration for details)
+  kratos:
+
+    development: true
+
+    automigration:
+      enabled: true
+
+    config:
+
+      session:
+        cookie:
+          same_site: Lax
+          domain: 172.18.1.128.sslip.io
+
+      cookies:
+        same_site: Lax
+        domain: 172.18.1.128.sslip.io
+
+      serve:
+        public:
+          # The URL where the endpoint is exposed at. This domain is used to generate redirects, form URLs, and more.
+          base_url: http://172.18.1.128.sslip.io/iam
+          # Configures Cross Origin Resource Sharing for public endpoints.
+          cors:
+            # Sets whether CORS is enabled
+            enabled: true
+        admin:
+          # The URL where the admin endpoint is exposed at.
+          base_url: http://172.18.1.128.sslip.io/iam/admin
+
+      selfservice:
+
+        # Redirect browsers to set URL per default
+        default_browser_return_url: http://172.18.1.128.sslip.io/iam/ui
+
+        # List of URLs that are allowed to be redirected to.
+        allowed_return_urls:
+          - http://172.18.1.128.sslip.io/iam/ui
+
+        methods:
+          password:
+            enabled: true
+
+        flows:
+          error:
+            ui_url: http://172.18.1.128.sslip.io/iam/ui/error
+
+          settings:
+            ui_url: http://172.18.1.128.sslip.io/iam/ui/settings
+            privileged_session_max_age: 15m
+            required_aal: highest_available
+
+          logout:
+            after:
+              # Redirect browsers to set URL per default
+              default_browser_return_url: http://172.18.1.128.sslip.io/iam/ui/login
+
+          login:
+            # URL where the login UI is hosted
+            ui_url: http://172.18.1.128.sslip.io/iam/ui/login
+
+          registration:
+            # URL where the registration UI is hosted
+            ui_url: http://172.18.1.128.sslip.io/iam/ui/registration
+            after:
+              password:
+                hooks:
+                  - hook: session
+
+      # Logging system configuration
+      log:
+        # If set will leak sensitive values (e.g. emails) in the logs.
+        leak_sensitive_values: true
+
+      secrets:
+        # Default Encryption Signing Secrets
+        default:
+          - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+
+      # JSON Schema for Identity Traits
+      identity:
+        # The default Identity Schema
+        default_schema_id: default
+        schemas:
+          - id: default
+            url: file:///etc/config/identity.default.schema.json
+
+      # Courier (responsible for sending and delivering messages over email, sms, and other means) configuration
+      courier:
+        # SMTP Configuration
+        smtp:
+          # SMTP connection string
+          connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
+
+      # OAuth2 provider Configuration
+      oauth2_provider:
+        # OAuth 2.0 Provider URL
+        url: http://thymus-hydra-admin:4445
+
+    identitySchemas:
+      "identity.default.schema.json": |
+        {
+          "$id": "https://schemas.ory.sh/presets/kratos/quickstart/email-password/identity.schema.json",
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "title": "Person",
+          "type": "object",
+          "properties": {
+            "traits": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "title": "E-Mail",
+                  "minLength": 3,
+                  "ory.sh/kratos": {
+                    "credentials": {
+                      "password": {
+                        "identifier": true
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "email"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+
+  deployment:
+    extraEnv:
+      - name: DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: kratos.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+            key: username
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: kratos.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+            key: password
+      - name: DSN
+        value: postgres://$(DB_USER):$(DB_PASSWORD)@cs-thymus-postgres:5432/kratos
+
+    automigration:
+      extraEnv:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: kratos.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kratos.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+              key: password
+        - name: DSN
+          value: postgres://$(DB_USER):$(DB_PASSWORD)@cs-thymus-postgres:5432/kratos
+
+  statefulSet:
+    extraEnv:
+      - name: DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: kratos.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+            key: username
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: kratos.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+            key: password
+      - name: DSN
+        value: postgres://$(DB_USER):$(DB_PASSWORD)@cs-thymus-postgres:5432/kratos
+
+  job:
+    extraEnv:
+      - name: DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: kratos.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+            key: username
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: kratos.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+            key: password
+      - name: DSN
+        value: postgres://$(DB_USER):$(DB_PASSWORD)@cs-thymus-postgres:5432/kratos
+
+  cronjob:
+    cleanup:
+      extraEnv:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: kratos.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kratos.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+              key: password
+        - name: DSN
+          value: postgres://$(DB_USER):$(DB_PASSWORD)@cs-thymus-postgres:5432/kratos
+
+# Overrides for the Hydra subchart
+hydra:
+
+  # Hydra configuration (see https://www.ory.sh/docs/hydra/reference/configuration for details)
+  hydra:
+
+    #image:
+    #  tag: latest-sqlite
+
+    # If true, disables critical security measures to allow easier local development
+    dev: true
+    automigration:
+      enabled: true
+    config:
+      serve:
+        cookies:
+          # Specify the SameSite mode that cookies should be sent with
+          same_site_mode: Lax
+          domain: 172.18.1.128.sslip.io
+
+      urls:
+        self:
+          # This value will be used as the `issuer` in access and ID tokens
+          issuer: http://172.18.1.128.sslip.io/iam/oauth
+        # Sets the consent endpoint of the User Login & Consent flow
+        consent: http://172.18.1.128.sslip.io/iam/ui/consent
+        # Sets the OAuth2 Login Endpoint URL of the OAuth2 User Login & Consent flow
+        login: http://172.18.1.128.sslip.io/iam/ui/login
+        # Sets the logout endpoint
+        logout: http://172.18.1.128.sslip.io/iam/ui/logout
+        identity_provider:
+          # The public URL of the ORY Kratos instance
+          publicUrl: http://172.18.1.128.sslip.io/iam
+          # The admin URL of the ORY Kratos instance
+          url: http://172.18.1.128.sslip.io/iam/admin
+
+      # The secrets section configures secrets used for encryption and signing of several systems
+      secrets:
+        system:
+          - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+
+      # Configures OpenID Connect features
+      oidc:
+        # Configures the Subject Identifier algorithm
+        subject_identifiers:
+          # A list of algorithms to enable
+          supported_types:
+            - pairwise
+            - public
+          # Configures the pairwise algorithm
+          pairwise:
+            salt: PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+
+      # Logging system configuration
+      log:
+        # Logs sensitive values such as cookie and URL parameters
+        leak_sensitive_values: true
+
+        # Sets the log level.
+        level: trace
+
+  deployment:
+    extraEnv:
+      - name: DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: hydra.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+            key: username
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: hydra.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+            key: password
+      - name: DSN
+        value: postgres://$(DB_USER):$(DB_PASSWORD)@cs-thymus-postgres:5432/hydra
+
+    automigration:
+      extraEnv:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: hydra.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: hydra.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+              key: password
+        - name: DSN
+          value: postgres://$(DB_USER):$(DB_PASSWORD)@cs-thymus-postgres:5432/hydra
+
+  job:
+    extraEnv:
+      - name: DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: hydra.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+            key: username
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: hydra.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+            key: password
+      - name: DSN
+        value: postgres://$(DB_USER):$(DB_PASSWORD)@cs-thymus-postgres:5432/hydra
+
+  cronjob:
+    janitor:
+      extraEnv:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: hydra.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: hydra.cs-thymus-postgres.credentials.postgresql.acid.zalan.do
+              key: password
+        - name: DSN
+          value: postgres://$(DB_USER):$(DB_PASSWORD)@cs-thymus-postgres:5432/hydra
+
+# Overrides for the Kratos Self Service UI subchart (see https://github.com/ory/k8s/tree/master/helm/charts/kratos-selfservice-ui-node)
+kratos-selfservice-ui-node:
+
+  deployment:
+    extraEnv:
+      - name: HYDRA_ADMIN_URL
+        value: http://thymus-hydra-admin:4445
+      - name: DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES
+        value: "true"
+
+  # The URL where ORY Kratos's Public API is located at
+  kratosPublicUrl: http://thymus-kratos-public:80
+
+  kratosBrowserUrl: http://172.18.1.128.sslip.io/iam
+
+  config:
+    csrfCookieName: cookie_name

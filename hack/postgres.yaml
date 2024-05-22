@@ -1,0 +1,33 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# PostgreSQL database for Thymus
+# This configuration can be used if Thymus is deployed outside Carbyne Stack
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: cs-thymus-postgres
+spec:
+  teamId: "thymus"
+  volume:
+    size: 1Gi
+  numberOfInstances: 1
+  enableMasterLoadBalancer: false
+  users:
+    kratos:
+    - login
+    hydra:
+    - login
+  databases:
+    kratos: kratos
+    hydra: hydra
+  postgresql:
+    version: "15"
+  patroni:
+    pg_hba:
+      - host all all 0.0.0.0/0 md5
+      - local all all md5

@@ -10,7 +10,7 @@ repos:
     hooks:
       - id: check-byte-order-marker
       - id: check-yaml
-        exclude: ^klyshko-operator/charts/klyshko/templates/.*|klyshko-operator/config/manager/manager.yaml$
+        exclude: ^charts/thymus/templates/.*$
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: mixed-line-ending

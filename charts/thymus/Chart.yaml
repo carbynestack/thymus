@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+apiVersion: v2
+name: thymus
+description: Helm Chart for the Thymus Authentication and Authorization Subsystem.
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+dependencies:
+  - name: kratos
+    version: 0.42.1
+    repository: https://k8s.ory.sh/helm/charts
+  - name: hydra
+    version: 0.42.1
+    repository: https://k8s.ory.sh/helm/charts
+  - name: kratos-selfservice-ui-node
+    version: 0.42.1
+    repository: https://k8s.ory.sh/helm/charts

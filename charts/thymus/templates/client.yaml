@@ -1,0 +1,26 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# The Thymus OAuth2 client configuration
+apiVersion: hydra.ory.sh/v1alpha1
+kind: OAuth2Client
+metadata:
+  name: thymus-client
+  namespace: default
+spec:
+  grantTypes:
+    - authorization_code
+    - refresh_token
+  responseTypes:
+    - id_token
+    - code
+  scope: "openid offline"
+  secretName: thymus-client-secret
+  tokenEndpointAuthMethod: none
+  skipConsent: true
+  redirectUris:
+    - http://127.0.0.1:5555/callback
