@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/carbynestack/thymus/compare/chart-v0.2.1...chart-v0.2.2) (2024-06-05)
+
+
+### Bug Fixes
+
+* use latest actions because of node image deprecation ([28663e1](https://github.com/carbynestack/thymus/commit/28663e1db2bc66ebdd68016d28c183b35b05c3f8))
+
 ## [0.2.1](https://github.com/carbynestack/thymus/compare/chart-v0.2.0...chart-v0.2.1) (2024-06-05)
 
 
