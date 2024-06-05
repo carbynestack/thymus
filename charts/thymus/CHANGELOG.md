@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/carbynestack/thymus/compare/chart-v0.2.2...chart-v0.2.3) (2024-06-05)
+
+
+### Bug Fixes
+
+* trigger chart publication ([192f8c4](https://github.com/carbynestack/thymus/commit/192f8c4fc57a5b7c6ad336a08d7375ddce8d2656))
+
 ## [0.2.2](https://github.com/carbynestack/thymus/compare/chart-v0.2.1...chart-v0.2.2) (2024-06-05)
 
 
