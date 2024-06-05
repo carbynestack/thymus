@@ -25,6 +25,3 @@
 .idea/
 *.tmproj
 .vscode/
-
-# TODO Remove
-trigger-build-touch
