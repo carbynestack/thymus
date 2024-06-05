@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1](https://github.com/carbynestack/thymus/compare/thymus-v0.1.0...thymus-v0.1.1) (2024-06-05)
+
+
+### Bug Fixes
+
+* make publish chart logic work ([a8a871d](https://github.com/carbynestack/thymus/commit/a8a871d14ef5cb594a1cf17a726464e64b0805e5))
+* use latest actions because of node image deprecation ([28663e1](https://github.com/carbynestack/thymus/commit/28663e1db2bc66ebdd68016d28c183b35b05c3f8))
+
 ## [0.1.0](https://github.com/carbynestack/thymus/compare/thymus-v0.1.0...thymus-v0.1.0) (2024-06-05)
 
 
