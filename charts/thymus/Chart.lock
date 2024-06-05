@@ -1,0 +1,12 @@
+dependencies:
+- name: kratos
+  repository: https://k8s.ory.sh/helm/charts
+  version: 0.42.1
+- name: hydra
+  repository: https://k8s.ory.sh/helm/charts
+  version: 0.42.1
+- name: kratos-selfservice-ui-node
+  repository: https://k8s.ory.sh/helm/charts
+  version: 0.42.1
+digest: sha256:0a101adf414a60ebe9633cfb4815da0f99e5e0461bb029803de52026064af83f
+generated: "2024-05-21T15:37:41.997657+02:00"

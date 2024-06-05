@@ -1,0 +1,75 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Virtual Services to expose the Kratos and Hydra APIs
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: thymus
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - cs-service-gateway
+  # The routes for Kratos and Hydra Public / Admin APIs
+  # IMPORTANT: The order of the routes is important, as the first match will be used
+  http:
+    - name: "Kratos Admin API route"
+      match:
+        - uri:
+            prefix: /iam/admin/
+      rewrite:
+        uri: /admin/
+      route:
+        - destination:
+            port:
+              number: 80
+            host: {{ include "thymus.fullname" . }}-kratos-admin
+    - name: "Kratos Self Service UI route"
+      match:
+        - uri:
+            prefix: /iam/ui/
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            port:
+              number: 80
+            host: {{ include "thymus.fullname" . }}-kratos-selfservice-ui-node
+    - name: "Hydra Admin API route"
+      match:
+        - uri:
+            prefix: /iam/oauth/admin/
+      rewrite:
+        uri: /admin
+      route:
+        - destination:
+            port:
+              number: 4445
+            host: {{ include "thymus.fullname" . }}-hydra-admin
+    - name: "Hydra Public API route"
+      match:
+        - uri:
+            prefix: /iam/oauth/
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            port:
+              number: 4444
+            host: {{ include "thymus.fullname" . }}-hydra-public
+    - name: "Kratos Public API route"
+      match:
+        - uri:
+            prefix: /iam/
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            port:
+              number: 80
+            host: {{ include "thymus.fullname" . }}-kratos-public

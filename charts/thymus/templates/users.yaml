@@ -1,0 +1,57 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Create demo users
+{{- if .Values.thymus.users.enabled }}
+{{- $command := printf "curl -X POST -sf -H 'Content-Type: application/json' -d @/user-credentials/data.json http://%s-kratos-admin:80/admin/identities"
+ (include "thymus.fullname" . ) -}}
+{{- range $index, $value := .Values.thymus.users.data }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "user-credentials-{{ $index }}"
+data:
+  data.json: |
+    {
+      "traits": {
+        "email": "{{ $value.email }}"
+      },
+      "credentials": {
+        "password": {
+          "config": {
+            "password": "{{ $value.password }}"
+          }
+        }
+      }
+    }
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "create-user-{{ $index }}"
+spec:
+  backoffLimit: 10
+  template:
+    spec:
+      volumes:
+        - name: user-credentials-volume
+          configMap:
+            name: "user-credentials-{{ $index }}"
+      containers:
+        - name: add-user
+          image: curlimages/curl:8.8.0
+          command:
+            - "sh"
+            - "-c"
+            - {{ $command | quote }}
+          volumeMounts:
+            - name: user-credentials-volume
+              mountPath: /user-credentials
+      restartPolicy: OnFailure
+{{- end }}
+{{- end }}
