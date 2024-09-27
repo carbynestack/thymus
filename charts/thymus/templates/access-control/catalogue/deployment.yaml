@@ -1,0 +1,36 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Deployment for the policy catalogue
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: policy-catalogue
+  labels:
+      app: policy-catalogue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: policy-catalogue
+  template:
+    metadata:
+      labels:
+        app: policy-catalogue
+    spec:
+      containers:
+      - name: policy-catalogue
+        image: kind.local/catalogue-84d6b40c2d4352cde09907095930fab8:latest
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: OPA_SERVICE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: opa
+                key: OPA
+        ports:
+          - containerPort: 8080

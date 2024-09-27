@@ -1,0 +1,19 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Service for exposing the policy catalogue
+apiVersion: v1
+kind: Service
+metadata:
+  name: policy-catalogue
+spec:
+  selector:
+    app: policy-catalogue
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

@@ -1,0 +1,18 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# OPA cluster managed by the Stackable OPA Operator
+apiVersion: opa.stackable.tech/v1alpha1
+kind: OpaCluster
+metadata:
+  name: opa
+spec:
+  image:
+    productVersion: "0.66.0"
+  servers:
+    roleGroups:
+      default: {}

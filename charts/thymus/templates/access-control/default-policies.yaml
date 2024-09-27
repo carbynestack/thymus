@@ -1,0 +1,31 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Default OPA policies
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: default-policies
+  labels:
+    opa.stackable.tech/bundle: "true"
+data:
+  donor-read.rego: |
+    package play
+
+    import rego.v1
+
+    tags contains tag if {
+      tag := {"key": "derived-from", "value": input.inputs[_].owner}
+    }
+
+    default read := false
+
+    read if {
+      some i
+      tags[i].key == "derived-from"
+      tags[i].value == input.subject
+    }
