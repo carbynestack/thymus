@@ -21,11 +21,11 @@ thymus:
   users:
     enabled: false
     data:
-      - name: Elon Musk
-        email: elon.musk@tesla.com
+      - name: Elon
+        email: elon@carbynestack.io
         password: "2#Tv91*d-Z,M"
-      - name: Jeff Bezos
-        email: jeff.bezos@amazon.com
+      - name: Jeff
+        email: jeff@carbynestack.io
         password: "86KIo6<]!/V="
 
 # Overrides for the Kratos subchart
