@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/carbynestack/thymus/compare/thymus-v0.1.1...thymus-v0.1.2) (2024-10-25)
+
+
+### Bug Fixes
+
+* rename demo users ([#17](https://github.com/carbynestack/thymus/issues/17)) ([a2b48d1](https://github.com/carbynestack/thymus/commit/a2b48d155236b8858229095dd76db25317c560b7))
+
 ## [0.1.1](https://github.com/carbynestack/thymus/compare/thymus-v0.1.0...thymus-v0.1.1) (2024-06-05)
 
 
