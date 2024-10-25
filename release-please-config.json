@@ -5,9 +5,9 @@
   "pull-request-header": ":package: Staging a new release",
   "skip-snapshot": true,
   "packages": {
-    ".": {
-      "package-name": "thymus",
-      "release-type": "simple"
+    "services": {
+      "package-name": "services",
+      "release-type": "go"
     },
     "charts/thymus": {
       "package-name": "chart",
