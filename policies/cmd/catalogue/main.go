@@ -22,6 +22,7 @@ func getEnv(key string) string {
 
 func main() {
 	opaSvcUrl := getEnv("OPA_SERVICE_URL")
+	log.Println("Using OPA service URL:", opaSvcUrl)
 	server := catalogue.NewServer(opaSvcUrl)
 	err := server.Run()
 	if err != nil {

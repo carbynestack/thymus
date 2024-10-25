@@ -7,36 +7,22 @@ package catalogue
 
 import (
 	"encoding/json"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"net/http"
+	"net/http/httptest"
 )
-
-func TestOPA(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "OPA Suite")
-}
 
 var _ = Describe("OPA", func() {
 
 	Describe("fetchPoliciesFromOPA", func() {
 		It("should fetch all policies from OPA service", func() {
-			mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				Expect(r.URL.Path).To(Equal("/v1/policies"))
-				w.WriteHeader(http.StatusOK)
-				err := json.NewEncoder(w).Encode(Result{
-					Policies: []Policy{
-						{ID: "policy1", Code: "code1"},
-						{ID: "policy2", Code: "code2"},
-					},
-				})
-				if err != nil {
-					return
-				}
-			}))
+			mockServer := newMockServer(Result{
+				Policies: []Policy{
+					{ID: "policy1", Code: "code1"},
+					{ID: "policy2", Code: "code2"},
+				},
+			})
 			defer mockServer.Close()
 
 			policies, err := fetchPoliciesFromOPA(mockServer.URL)
@@ -49,18 +35,11 @@ var _ = Describe("OPA", func() {
 
 	Describe("fetchPolicyFromOPA", func() {
 		It("should fetch a single policy by ID from OPA service", func() {
-			mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				Expect(r.URL.Path).To(Equal("/v1/policies"))
-				w.WriteHeader(http.StatusOK)
-				err := json.NewEncoder(w).Encode(Result{
-					Policies: []Policy{
-						{ID: "policy1", Code: "code1"},
-					},
-				})
-				if err != nil {
-					return
-				}
-			}))
+			mockServer := newMockServer(Result{
+				Policies: []Policy{
+					{ID: "policy1", Code: "code1"},
+				},
+			})
 			defer mockServer.Close()
 
 			policy, err := fetchPolicyFromOPA(mockServer.URL, "policy1")
@@ -70,18 +49,11 @@ var _ = Describe("OPA", func() {
 		})
 
 		It("should return nil if policy is not found", func() {
-			mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				Expect(r.URL.Path).To(Equal("/v1/policies"))
-				w.WriteHeader(http.StatusOK)
-				err := json.NewEncoder(w).Encode(Result{
-					Policies: []Policy{
-						{ID: "policy1", Code: "code1"},
-					},
-				})
-				if err != nil {
-					return
-				}
-			}))
+			mockServer := newMockServer(Result{
+				Policies: []Policy{
+					{ID: "policy1", Code: "code1"},
+				},
+			})
 			defer mockServer.Close()
 
 			policy, err := fetchPolicyFromOPA(mockServer.URL, "policy2")
@@ -91,3 +63,12 @@ var _ = Describe("OPA", func() {
 	})
 
 })
+
+func newMockServer(result Result) *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		Expect(r.URL.Path).To(Equal("/v1/policies"))
+		w.WriteHeader(http.StatusOK)
+		err := json.NewEncoder(w).Encode(result)
+		Expect(err).ToNot(HaveOccurred())
+	}))
+}

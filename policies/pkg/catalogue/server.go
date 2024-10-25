@@ -8,6 +8,9 @@ package catalogue
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	healthcheck "github.com/tavsec/gin-healthcheck"
+	"github.com/tavsec/gin-healthcheck/checks"
+	"github.com/tavsec/gin-healthcheck/config"
 	"net/http"
 	"strings"
 )
@@ -73,6 +76,7 @@ func (s *Server) handleGetPolicyByID(c *gin.Context) {
 	}
 }
 
+// setupRouter sets up the server's router
 func (s *Server) setupRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(gin.Logger())
@@ -83,7 +87,19 @@ func (s *Server) setupRouter() *gin.Engine {
 	return r
 }
 
+// setupHealthCheck sets up the server's health check endpoint
+func (s *Server) setupHealthCheck(r *gin.Engine) error {
+	cfg := config.DefaultConfig()
+	cfg.HealthPath = "/health"
+	return healthcheck.New(r, cfg, []checks.Check{})
+}
+
+// Run starts the server and listens on port 8080
 func (s *Server) Run() error {
 	r := s.setupRouter()
+	err := s.setupHealthCheck(r)
+	if err != nil {
+		return err
+	}
 	return r.Run(":8080")
 }

@@ -11,30 +11,29 @@ import (
 	. "github.com/onsi/gomega"
 	"net/http"
 	"net/http/httptest"
-	"testing"
 )
 
-func TestServer(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Server Suite")
-}
-
-func setupMockServer() *httptest.Server {
+func setupMockServer(faulty bool) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		Expect(r.URL.Path).To(Equal("/v1/policies"))
-		w.WriteHeader(http.StatusOK)
-		err := json.NewEncoder(w).Encode(Result{
-			Policies: []Policy{
-				{ID: "stackable/bundles/policy1", Code: "code1"},
-			},
-		})
-		if err != nil {
+		if faulty {
+			w.WriteHeader(http.StatusInternalServerError)
 			return
+		} else {
+			w.WriteHeader(http.StatusOK)
+			err := json.NewEncoder(w).Encode(Result{
+				Policies: []Policy{
+					{ID: "stackable/bundles/policy1", Code: "code1"},
+				},
+			})
+			if err != nil {
+				return
+			}
 		}
 	}))
 }
 
-var _ = Describe("Server", func() {
+var _ = Describe("Server with a faulty OPA service", func() {
 
 	var (
 		mockServer *httptest.Server
@@ -42,12 +41,52 @@ var _ = Describe("Server", func() {
 	)
 
 	BeforeEach(func() {
-		mockServer = setupMockServer()
+		mockServer = setupMockServer(true)
 		server = NewServer(mockServer.URL)
 	})
 
 	AfterEach(func() {
 		mockServer.Close()
+	})
+
+	Describe("handleGetPolicies", func() {
+		It("should return an error", func() {
+			req, _ := http.NewRequest("GET", "/policies", nil)
+			resp := httptest.NewRecorder()
+			router := server.setupRouter()
+			router.ServeHTTP(resp, req)
+
+			Expect(resp.Code).To(Equal(http.StatusInternalServerError))
+		})
+	})
+})
+
+var _ = Describe("Server with a healthy OPA service", func() {
+
+	var (
+		mockServer *httptest.Server
+		server     *Server
+	)
+
+	BeforeEach(func() {
+		mockServer = setupMockServer(false)
+		server = NewServer(mockServer.URL)
+	})
+
+	AfterEach(func() {
+		mockServer.Close()
+	})
+
+	Describe("Run", func() {
+		It("should start a healthy server without errors", func() {
+			go func() {
+				err := server.Run()
+				Expect(err).ToNot(HaveOccurred())
+			}()
+			resp, err := http.Get("http://localhost:8080/health")
+			Expect(err).ToNot(HaveOccurred())
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+		})
 	})
 
 	Describe("handleGetPolicies", func() {
