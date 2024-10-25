@@ -66,7 +66,7 @@ func (s *Server) handleGetPolicyByID(c *gin.Context) {
 		return
 	}
 
-	switch c.GetHeader("Content-Type") {
+	switch c.GetHeader("Accept") {
 	case "application/json":
 		c.JSON(http.StatusOK, policy)
 	case "text/plain", "":
