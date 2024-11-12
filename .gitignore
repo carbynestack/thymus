@@ -27,5 +27,8 @@
 # Dependency directories (remove the comment below to include it)
 vendor/
 
+### Maven
+target/
+
 # Helm
 charts/thymus/charts/*
