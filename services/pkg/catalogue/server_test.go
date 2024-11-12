@@ -105,10 +105,10 @@ var _ = Describe("Server with a healthy OPA service", func() {
 	})
 
 	Describe("handleGetPolicyByID", func() {
-		When("Content-Type is application/json", func() {
+		When("Accept header is application/json", func() {
 			It("should return policy details for a valid ID", func() {
 				req, _ := http.NewRequest("GET", "/policies/policy1", nil)
-				req.Header.Add("Content-Type", "application/json")
+				req.Header.Add("Accept", "application/json")
 				resp := httptest.NewRecorder()
 				router := server.setupRouter()
 				router.ServeHTTP(resp, req)
@@ -121,10 +121,10 @@ var _ = Describe("Server with a healthy OPA service", func() {
 			})
 		})
 
-		When("Content-Type is text/plain", func() {
+		When("Accept header is text/plain", func() {
 			It("should return policy code for a valid ID", func() {
 				req, _ := http.NewRequest("GET", "/policies/policy1", nil)
-				req.Header.Add("Content-Type", "text/plain")
+				req.Header.Add("Accept", "text/plain")
 				resp := httptest.NewRecorder()
 				router := server.setupRouter()
 				router.ServeHTTP(resp, req)
