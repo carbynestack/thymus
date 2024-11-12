@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/carbynestack/thymus/compare/chart-v0.2.3...chart-v0.2.4) (2024-11-12)
+
+
+### Bug Fixes
+
+* rename demo users ([#17](https://github.com/carbynestack/thymus/issues/17)) ([a2b48d1](https://github.com/carbynestack/thymus/commit/a2b48d155236b8858229095dd76db25317c560b7))
+
 ## [0.2.3](https://github.com/carbynestack/thymus/compare/chart-v0.2.2...chart-v0.2.3) (2024-06-05)
 
 
