@@ -71,7 +71,7 @@ spec:
       route:
         - destination:
             port:
-              number: {{ .Values.policyCatalogue.service.port }}
+              number: {{ .Values.thymus.policyCatalogue.service.port }}
             host: {{ include "thymus.fullname" . }}-policy-catalogue
     - name: "Kratos Public API route"
       match:

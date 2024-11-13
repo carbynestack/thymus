@@ -11,9 +11,9 @@ kind: Service
 metadata:
   name: {{ include "thymus.fullname" . }}-policy-catalogue
   namespace: {{ .Release.Namespace }}
-  {{- if .Values.policyCatalogue.service.annotations }}
+  {{- if .Values.thymus.policyCatalogue.service.annotations }}
   annotations:
-{{ .Values.policyCatalogue.service.annotations | toYaml | trim | indent 4 }}
+{{ .Values.thymus.policyCatalogue.service.annotations | toYaml | trim | indent 4 }}
   {{- end}}
 spec:
   selector:
@@ -22,5 +22,5 @@ spec:
   ports:
     - name: http
       protocol: TCP
-      port: {{ .Values.policyCatalogue.service.port }}
+      port: {{ .Values.thymus.policyCatalogue.service.port }}
       targetPort: http

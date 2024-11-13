@@ -17,7 +17,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 spec:
-  replicas: {{ .Values.policyCatalogue.replicaCount }}
+  replicas: {{ .Values.thymus.policyCatalogue.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "thymus.name" . }}-policy-catalogue
@@ -28,16 +28,16 @@ spec:
         app.kubernetes.io/name: {{ include "thymus.name" . }}-policy-catalogue
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-      {{- if .Values.policyCatalogue.image.pullSecrets }}
+      {{- if .Values.thymus.policyCatalogue.image.pullSecrets }}
       imagePullSecrets:
-        {{- range .Values.policyCatalogue.image.pullSecrets }}
+        {{- range .Values.thymus.policyCatalogue.image.pullSecrets }}
         - name: {{ . }}
         {{- end}}
       {{- end}}
       containers:
       - name: "{{ .Chart.Name }}-policy-catalogue"
-        image: "{{ .Values.policyCatalogue.image.registry }}/{{ .Values.policyCatalogue.image.repository }}:{{ .Values.policyCatalogue.image.tag }}"
-        imagePullPolicy: {{ .Values.policyCatalogue.image.pullPolicy }}
+        image: "{{ .Values.thymus.policyCatalogue.image.registry }}/{{ .Values.thymus.policyCatalogue.image.repository }}:{{ .Values.thymus.policyCatalogue.image.tag }}"
+        imagePullPolicy: {{ .Values.thymus.policyCatalogue.image.pullPolicy }}
         env:
           # OPA service URL provided as configmap by OPA operator
           - name: OPA_SERVICE_URL
@@ -53,13 +53,13 @@ spec:
           httpGet:
             path: /health
             port: 8080
-          periodSeconds: {{ .Values.policyCatalogue.probes.liveness.period }}
-          initialDelaySeconds: {{ .Values.policyCatalogue.probes.liveness.initialDelay }}
-          failureThreshold: {{ .Values.policyCatalogue.probes.liveness.failureThreshold }}
+          periodSeconds: {{ .Values.thymus.policyCatalogue.probes.liveness.period }}
+          initialDelaySeconds: {{ .Values.thymus.policyCatalogue.probes.liveness.initialDelay }}
+          failureThreshold: {{ .Values.thymus.policyCatalogue.probes.liveness.failureThreshold }}
         readinessProbe:
           httpGet:
             path: /health
             port: 8080
-          periodSeconds: {{ .Values.policyCatalogue.probes.readiness.period }}
-          initialDelaySeconds: {{ .Values.policyCatalogue.probes.readiness.initialDelay }}
-          failureThreshold: {{ .Values.policyCatalogue.probes.readiness.failureThreshold }}
+          periodSeconds: {{ .Values.thymus.policyCatalogue.probes.readiness.period }}
+          initialDelaySeconds: {{ .Values.thymus.policyCatalogue.probes.readiness.initialDelay }}
+          failureThreshold: {{ .Values.thymus.policyCatalogue.probes.readiness.failureThreshold }}
