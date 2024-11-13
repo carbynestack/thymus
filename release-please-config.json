@@ -15,7 +15,7 @@
     },
     "clients/java": {
       "package-name": "java-client",
-      "release-type": "java"
+      "release-type": "maven"
     }
   }
 }
