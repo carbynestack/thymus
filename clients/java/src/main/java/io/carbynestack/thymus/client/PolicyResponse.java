@@ -19,14 +19,14 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(force = true)
 public class PolicyResponse {
 
-    private static final Pattern POLICY_ID_PATTERN = Pattern.compile("stackable/bundles/([^/]+)/([^/]+)");
+    private static final Pattern POLICY_ID_PATTERN = Pattern.compile("([^/]+):([^/]+)");
 
     String id;
 
     String raw;
 
     public PolicyResponse(Policy policy) {
-        this.id = "stackable/bundles/" + policy.getName().getNamespace() + "/" + policy.getName().getName();
+        this.id = policy.getName().getNamespace() + ":" + policy.getName().getName();
         this.raw = policy.getSource();
     }
 

@@ -63,6 +63,7 @@ public class ThymusVCClient {
         return Future.sequence(invocations).map(results -> {
             Set<ThymusError> errors = new HashSet<>();
             Set<NamespacedName> commonPolicies = new HashSet<>();
+            Set<NamespacedName> allPolicies = new HashSet<>();
             results.zipWithIndex().forEach(r -> {
                 val index = r._2;
                 val result = r._1;
@@ -70,6 +71,8 @@ public class ThymusVCClient {
                     // Collect all errors indexed by the endpoint
                     errors.add(result._2.getLeft());
                 } else {
+                    allPolicies.addAll(result._2.get());
+
                     // Compute the intersection of all policies
                     if (index == 0) {
                         commonPolicies.addAll(result._2.get());
@@ -78,6 +81,10 @@ public class ThymusVCClient {
                     }
                 }
             });
+            if (commonPolicies.size() != allPolicies.size()) {
+                allPolicies.removeAll(commonPolicies);
+                log.debug("There are policies that are not common across all VCPs: {}", allPolicies);
+            }
             if (!errors.isEmpty()) {
                 val me = new ThymusError.MultiError().setErrors(errors);
                 return Either.left(me);
