@@ -9,7 +9,7 @@ apiVersion: v2
 name: thymus
 description: Helm Chart for the Thymus Authentication and Authorization Subsystem.
 type: application
-version: 0.3.0
+version: 0.4.0
 appVersion: 0.1.0
 dependencies:
   - name: kratos

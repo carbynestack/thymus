@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.0](https://github.com/carbynestack/thymus/compare/chart-v0.3.0...chart-v0.4.0) (2024-11-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chart:** move policy catalogue values from root into thymus container ([#26](https://github.com/carbynestack/thymus/issues/26))
+
+### Bug Fixes
+
+* **chart:** move policy catalogue values from root into thymus container ([#26](https://github.com/carbynestack/thymus/issues/26)) ([43ed16f](https://github.com/carbynestack/thymus/commit/43ed16fca5cffe053df09a6a08bda9ccce7d8ec6))
+
 ## [0.3.0](https://github.com/carbynestack/thymus/compare/chart-v0.2.4...chart-v0.3.0) (2024-11-13)
 
 
