@@ -1,4 +1,4 @@
-module policycatalogue
+module github.com/carbynestack/thymus/services
 
 go 1.22.0
 

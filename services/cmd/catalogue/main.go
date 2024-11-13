@@ -6,9 +6,9 @@
 package main
 
 import (
+	"github.com/carbynestack/thymus/services/pkg/catalogue"
 	"log"
 	"os"
-	"policycatalogue/pkg/catalogue"
 )
 
 // getEnv fetches the environment variable or panics if not set
