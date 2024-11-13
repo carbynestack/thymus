@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/carbynestack/thymus/compare/services-v0.2.0...services-v0.2.1) (2024-11-13)
+
+
+### Bug Fixes
+
+* **services:** set correct module name ([#24](https://github.com/carbynestack/thymus/issues/24)) ([eb49d82](https://github.com/carbynestack/thymus/commit/eb49d82d85848204c88e3834ba7952e7ae5a9078))
+
 ## [0.2.0](https://github.com/carbynestack/thymus/compare/services-v0.1.2...services-v0.2.0) (2024-11-13)
 
 
