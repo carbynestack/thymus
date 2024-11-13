@@ -14,16 +14,39 @@ import (
 
 const BasePath = "v1/policies"
 
-// Result is the response from the OPA service
-type Result struct {
-	Policies []Policy `json:"result"`
-}
-
 // Policy represents a policy in the OPA service
 type Policy struct {
 	ID   string `json:"id"`
 	Code string `json:"raw"`
 	Ast  string `json:"-"` // Will be ignored
+}
+
+// ListPoliciesResult is the response from the OPA service when invoking the
+// list policies endpoint
+type ListPoliciesResult struct {
+	Policies []Policy `json:"result"`
+}
+
+// GetPolicyResult is the response from the OPA service when invoking the
+// get policy by ID endpoint
+type GetPolicyResult struct {
+	Policy Policy `json:"result"`
+}
+
+// PolicyNotFound is an error type that is returned when a policy with the given
+// ID is not found
+type PolicyNotFound struct {
+	ID string
+}
+
+// Error returns the error message
+func (e PolicyNotFound) Error() string {
+	return fmt.Sprintf("policy with ID '%s' not found", e.ID)
+}
+
+// NewPolicyNotFound creates a new PolicyNotFound error instance
+func NewPolicyNotFound(id string) PolicyNotFound {
+	return PolicyNotFound{ID: id}
 }
 
 // fetchPoliciesFromOPA fetches all policies from the OPA service. Note that
@@ -35,12 +58,18 @@ func fetchPoliciesFromOPA(opaSvcUrl string) (policies map[string]Policy, error e
 	}
 	defer closeBody(resp.Body, &error)
 
+	// The only two status codes we expect are 200 OK and 500 Internal Server
+	// Error (see https://www.openpolicyagent.org/docs/latest/rest-api/#list-policies)
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch policies from OPA service: %s", resp.Status)
+	}
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	result := Result{}
+	result := ListPoliciesResult{}
 	err = json.Unmarshal(body, &result)
 	if err != nil {
 		return nil, err
@@ -54,17 +83,36 @@ func fetchPoliciesFromOPA(opaSvcUrl string) (policies map[string]Policy, error e
 }
 
 // fetchPolicyFromOPA fetches a single policy from the OPA service by its ID.
-// Note that there is no way to fetch a single policy by ID, so we fetch all.
-func fetchPolicyFromOPA(opaSvcUrl string, id string) (*Policy, error) {
-	policies, err := fetchPoliciesFromOPA(opaSvcUrl)
+func fetchPolicyFromOPA(opaSvcUrl string, id string) (policy *Policy, error error) {
+	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", opaSvcUrl, BasePath, id))
 	if err != nil {
 		return nil, err
 	}
-	p, ok := policies[id]
-	if !ok {
-		return nil, nil
+	defer closeBody(resp.Body, &error)
+
+	// The only three status codes we expect are 200 OK, 404 Not Found, and
+	// 500 Internal Server Error (see https://www.openpolicyagent.org/docs/latest/rest-api/#get-a-policy)
+	if resp.StatusCode != http.StatusOK {
+		if resp.StatusCode == http.StatusNotFound {
+			return nil, NewPolicyNotFound(id)
+		} else {
+			return nil, fmt.Errorf(
+				"failed to fetch policy with id '%s': %s",
+				id, resp.Status)
+		}
 	}
-	return &p, nil
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	result := GetPolicyResult{}
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return nil, err
+	}
+	return &result.Policy, nil
 }
 
 // closeBody closes the response body and updates the error if needed

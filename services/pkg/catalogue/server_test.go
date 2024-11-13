@@ -11,23 +11,40 @@ import (
 	. "github.com/onsi/gomega"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 )
 
 func setupMockServer(faulty bool) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		Expect(r.URL.Path).To(Equal("/v1/policies"))
 		if faulty {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
-		} else {
+		}
+		if r.URL.Path == "/v1/policies" {
 			w.WriteHeader(http.StatusOK)
-			err := json.NewEncoder(w).Encode(Result{
+			err := json.NewEncoder(w).Encode(ListPoliciesResult{
 				Policies: []Policy{
 					{ID: "stackable/bundles/policy1", Code: "code1"},
 				},
 			})
 			if err != nil {
-				return
+				Fail(err.Error())
+			}
+		} else if strings.HasPrefix(r.URL.Path, "/v1/policies/stackable/bundles") {
+			if strings.HasSuffix(r.URL.Path, "/policy1") {
+				w.WriteHeader(http.StatusOK)
+				err := json.NewEncoder(w).Encode(GetPolicyResult{
+					Policy: Policy{
+						ID:   "stackable/bundles/policy1",
+						Code: "code1",
+						Ast:  "ast1",
+					},
+				})
+				if err != nil {
+					Fail(err.Error())
+				}
+			} else {
+				w.WriteHeader(http.StatusNotFound)
 			}
 		}
 	}))
@@ -92,6 +109,7 @@ var _ = Describe("Server with a healthy OPA service", func() {
 	Describe("handleGetPolicies", func() {
 		It("should return a list of policy IDs", func() {
 			req, _ := http.NewRequest("GET", "/policies", nil)
+			req.Header.Add("Accept", "application/json")
 			resp := httptest.NewRecorder()
 			router := server.setupRouter()
 			router.ServeHTTP(resp, req)
@@ -121,7 +139,7 @@ var _ = Describe("Server with a healthy OPA service", func() {
 			})
 		})
 
-		When("Accept header is text/plain", func() {
+		When("accept header is text/plain", func() {
 			It("should return policy code for a valid ID", func() {
 				req, _ := http.NewRequest("GET", "/policies/policy1", nil)
 				req.Header.Add("Accept", "text/plain")
@@ -134,13 +152,16 @@ var _ = Describe("Server with a healthy OPA service", func() {
 			})
 		})
 
-		It("should return 404 if policy is not found", func() {
-			req, _ := http.NewRequest("GET", "/policies/policy2", nil)
-			resp := httptest.NewRecorder()
-			router := server.setupRouter()
-			router.ServeHTTP(resp, req)
+		When("policy is not found", func() {
+			It("should return 404", func() {
+				req, _ := http.NewRequest("GET", "/policies/policy2", nil)
+				req.Header.Add("Accept", "application/json")
+				resp := httptest.NewRecorder()
+				router := server.setupRouter()
+				router.ServeHTTP(resp, req)
 
-			Expect(resp.Code).To(Equal(http.StatusNotFound))
+				Expect(resp.Code).To(Equal(http.StatusNotFound))
+			})
 		})
 	})
 })

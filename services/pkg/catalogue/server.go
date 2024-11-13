@@ -6,6 +6,7 @@
 package catalogue
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	healthcheck "github.com/tavsec/gin-healthcheck"
@@ -58,16 +59,17 @@ func (s *Server) handleGetPolicyByID(c *gin.Context) {
 
 	policy, err := fetchPolicyFromOPA(s.opaSvcUrl, decodeID(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	if policy == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "policy not found"})
+		if errors.As(err, &PolicyNotFound{}) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 
 	switch c.GetHeader("Accept") {
 	case "application/json":
+		policy.ID = encodeID(policy.ID)
 		c.JSON(http.StatusOK, policy)
 	case "text/plain", "":
 		c.String(http.StatusOK, policy.Code)

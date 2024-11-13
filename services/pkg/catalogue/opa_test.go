@@ -17,7 +17,7 @@ var _ = Describe("OPA", func() {
 
 	Describe("fetchPoliciesFromOPA", func() {
 		It("should fetch all policies from OPA service", func() {
-			mockServer := newMockServer(Result{
+			mockServer := newMockServer(ListPoliciesResult{
 				Policies: []Policy{
 					{ID: "policy1", Code: "code1"},
 					{ID: "policy2", Code: "code2"},
@@ -35,9 +35,11 @@ var _ = Describe("OPA", func() {
 
 	Describe("fetchPolicyFromOPA", func() {
 		It("should fetch a single policy by ID from OPA service", func() {
-			mockServer := newMockServer(Result{
-				Policies: []Policy{
-					{ID: "policy1", Code: "code1"},
+			mockServer := newMockServer(GetPolicyResult{
+				Policy: Policy{
+					ID:   "policy1",
+					Code: "code1",
+					Ast:  "ast1",
 				},
 			})
 			defer mockServer.Close()
@@ -48,25 +50,23 @@ var _ = Describe("OPA", func() {
 			Expect(policy.Code).To(Equal("code1"))
 		})
 
-		It("should return nil if policy is not found", func() {
-			mockServer := newMockServer(Result{
-				Policies: []Policy{
-					{ID: "policy1", Code: "code1"},
-				},
-			})
+		It("should return an error if policy is not found", func() {
+			mockServer := httptest.NewServer(http.HandlerFunc(
+				func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusNotFound)
+				}))
 			defer mockServer.Close()
 
 			policy, err := fetchPolicyFromOPA(mockServer.URL, "policy2")
-			Expect(err).ToNot(HaveOccurred())
+			Expect(err).To(HaveOccurred())
 			Expect(policy).To(BeNil())
 		})
 	})
 
 })
 
-func newMockServer(result Result) *httptest.Server {
+func newMockServer(result interface{}) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		Expect(r.URL.Path).To(Equal("/v1/policies"))
 		w.WriteHeader(http.StatusOK)
 		err := json.NewEncoder(w).Encode(result)
 		Expect(err).ToNot(HaveOccurred())
