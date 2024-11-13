@@ -1,4 +1,5 @@
 {
-  "services": "0.1.2",
-  "charts/thymus": "0.3.0"
+  "services": "0.2.0",
+  "charts/thymus": "0.3.0",
+  "clients/java": "0.1.0"
 }
