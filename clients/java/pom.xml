@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>thymus-java-client</artifactId>
     <groupId>io.carbynestack</groupId>
-    <version>0.1.0</version>
+    <version>0.3.0</version>
     <name>Carbyne Stack Thymus Java Client</name>
     <description>Java client for the Carbyne Stack Thymus service.</description>
     <licenses>
