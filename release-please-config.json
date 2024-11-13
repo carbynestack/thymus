@@ -12,6 +12,10 @@
     "charts/thymus": {
       "package-name": "chart",
       "release-type": "helm"
+    },
+    "clients/java": {
+      "package-name": "java-client",
+      "release-type": "java"
     }
   }
 }
