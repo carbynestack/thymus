@@ -1,0 +1,79 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+name: Build and Test Services
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+  pull_request:
+    branches:
+      - 'master'
+jobs:
+  changes:
+    runs-on: ubuntu-22.04
+    permissions:
+      pull-requests: read
+    outputs:
+      service: ${{ steps.filter.outputs.services }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Check whether services codebase is affected
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            services:
+              - 'services/**'
+  services-test:
+    runs-on: ubuntu-22.04
+    needs: changes
+    if: ${{ needs.changes.outputs.service == 'true' }}
+    env:
+      GOPATH: ${{ github.workspace }}
+      GO111MODULE: on
+      REGISTRY: ghcr.io
+    defaults:
+      run:
+        working-directory: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}/services
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}/services/go.mod
+          cache-dependency-path: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}services/go.sum
+      - name: Perform Build
+        run: |
+          go build ./...
+      - name: Perform Tests
+        run: |
+          go test ./... -coverprofile coverage.txt
+      - name: Publishing Coverage
+        uses: codecov/codecov-action@v4
+        with:
+          name: codecov
+          files: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}/services/coverage.txt
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: services
+  # This is required to allow for setting the test job as required in scenarios
+  # where the tests are not actually run, e.g., when the helm chart is updated.
+  services-test-status:
+    runs-on: ubuntu-22.04
+    needs: services-test
+    if: '!cancelled()' # Makes the job run regardless whether 'test' succeeds or not but allows for cancellation
+    steps:
+      - name: Tests successful
+        if: ${{ !(contains(needs.services-test.result, 'failure')) }}
+        run: exit 0
+      - name: Tests failed
+        if: ${{ contains(needs.services-test.result, 'failure') }}
+        run: exit 1

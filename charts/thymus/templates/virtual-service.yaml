@@ -62,6 +62,17 @@ spec:
             port:
               number: 4444
             host: {{ include "thymus.fullname" . }}-hydra-public
+    - name: "Policy Catalogue route"
+      match:
+        - uri:
+            prefix: /iam/policies
+      rewrite:
+        uri: /policies
+      route:
+        - destination:
+            port:
+              number: {{ .Values.policyCatalogue.service.port }}
+            host: {{ include "thymus.fullname" . }}-policy-catalogue
     - name: "Kratos Public API route"
       match:
         - uri:

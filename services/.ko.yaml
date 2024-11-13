@@ -1,0 +1,7 @@
+#
+# Copyright (c) 2024 - for information on the respective copyright owner
+# see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+defaultBaseImage: ghcr.io/carbynestack/ubuntu:20.04-20210827-nonroot

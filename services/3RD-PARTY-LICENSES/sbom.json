@@ -1,0 +1,222 @@
+[
+  {
+    "project": "vendor/gopkg.in/yaml.v3",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/google.golang.org/protobuf",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "project": "vendor/go.mongodb.org/mongo-driver",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/golang.org/x/crypto",
+    "license": "BSD-Source-Code"
+  },
+  {
+    "project": "vendor/golang.org/x/tools",
+    "license": "BSD-Source-Code"
+  },
+  {
+    "project": "vendor/golang.org/x/net",
+    "license": "BSD-Source-Code"
+  },
+  {
+    "project": "vendor/golang.org/x/sys",
+    "license": "BSD-Source-Code"
+  },
+  {
+    "project": "vendor/golang.org/x/arch",
+    "license": "BSD-Source-Code"
+  },
+  {
+    "project": "vendor/golang.org/x/text",
+    "license": "BSD-Source-Code"
+  },
+  {
+    "project": "vendor/golang.org/x/sync",
+    "license": "BSD-Source-Code"
+  },
+  {
+    "project": "vendor/github.com/onsi/gomega",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/onsi/ginkgo/v2",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/pelletier/go-toml/v2",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/klauspost/compress",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/klauspost/compress/internal/snapref",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "project": "vendor/github.com/klauspost/compress/zstd",
+    "license": "BSD 3-Clause"
+  },
+  {
+    "project": "vendor/github.com/klauspost/compress/zstd/internal/xxhash",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/klauspost/cpuid/v2",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/influxdata/influxdb-client-go/v2",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/influxdata/line-protocol",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/twitchyliquid64/golang-asm",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "project": "vendor/github.com/oapi-codegen/runtime",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/gin-gonic/gin",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/youmark/pkcs8",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/cespare/xxhash/v2",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/redis/go-redis/v9",
+    "license": "BSD-2-Clause"
+  },
+  {
+    "project": "vendor/github.com/golang/snappy",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "project": "vendor/github.com/json-iterator/go",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/google/go-cmp",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "project": "vendor/github.com/google/pprof",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/google/uuid",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "project": "vendor/github.com/go-logr/logr",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/dgryski/go-rendezvous",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/gin-contrib/sse",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/go-task/slim-sprig/v3",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/montanaflynn/stats",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/tavsec/gin-healthcheck",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/cloudwego/iasm",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/cloudwego/base64x",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/ugorji/go/codec",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/leodido/go-urn",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/apapsch/go-jsonmerge/v2",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/xdg-go/pbkdf2",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/xdg-go/scram",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/xdg-go/stringprep",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/modern-go/reflect2",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/modern-go/concurrent",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/go-playground/locales",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/go-playground/validator/v10",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/go-playground/universal-translator",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/goccy/go-json",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/gabriel-vasile/mimetype",
+    "license": "MIT"
+  },
+  {
+    "project": "vendor/github.com/bytedance/sonic",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/bytedance/sonic/loader",
+    "license": "Apache-2.0"
+  },
+  {
+    "project": "vendor/github.com/mattn/go-isatty",
+    "license": "MIT"
+  }
+]
