@@ -6,14 +6,20 @@
  */
 package io.carbynestack.thymus.client;
 
+import io.carbynestack.httpclient.CsHttpClientException;
+import io.carbynestack.thymus.client.ThymusVCPClient.ThymusVCPClientBuilder;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.Stream;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
+import io.vavr.control.Option;
+import io.vavr.control.Try;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -137,6 +143,135 @@ public class ThymusVCClient {
             // Return the single unique policy
             return Either.right(uniquePolicies.values().iterator().next());
         });
+    }
+
+    /**
+     * Provides the bearer token used for authentication.
+     */
+    public interface BearerTokenProvider {
+
+        /**
+         * Returns the bearer token for a Thymus endpoint.
+         *
+         * @param endpoint The endpoint of the Thymus service for which the token is requested.
+         * @return The token
+         */
+        String getBearerToken(ThymusEndpoint endpoint);
+    }
+
+    /**
+     * Builder class to create a new {@link ThymusVCClient}.
+     */
+    public static class Builder {
+
+        private List<ThymusEndpoint> endpoints;
+        private final List<File> trustedCertificates;
+        private boolean sslValidationEnabled = true;
+        private Option<BearerTokenProvider> bearerTokenProvider;
+        private ThymusVCPClientBuilder thymusClientBuilder = ThymusVCPClient.Builder();
+
+        public Builder() {
+            this.endpoints = new ArrayList<>();
+            this.trustedCertificates = new ArrayList<>();
+            bearerTokenProvider = Option.none();
+        }
+
+        /**
+         * Adds a Thymus service endpoint to the list of endpoints, the client should communicate
+         * with.
+         *
+         * @param endpoint Endpoint of a backend Thymus Service
+         */
+        public Builder withEndpoint(ThymusEndpoint endpoint) {
+            this.endpoints.add(endpoint);
+            return this;
+        }
+
+        /**
+         * The client will be initialized to communicate with the given endpoints. All endpoints that
+         * have been added before will be replaced. To add additional endpoints use {@link
+         * #withEndpoint(ThymusEndpoint)}.
+         *
+         * @param endpoints A List of endpoints which will be used to communicate with.
+         */
+        public Builder withEndpoints(@NonNull List<ThymusEndpoint> endpoints) {
+            this.endpoints = new ArrayList<>(endpoints);
+            return this;
+        }
+
+        /**
+         * Controls whether SSL certificate validation is performed.
+         *
+         * <p>
+         *
+         * <p><b>WARNING</b><br>
+         * Please be aware, that disabling validation leads to insecure web connections and is meant to
+         * be used in a local test setup only. Using this option in a productive environment is
+         * explicitly <u>not recommended</u>.
+         *
+         * @param enabled <tt>true</tt>, in case SSL certificate validation should happen,
+         *                <tt>false</tt> otherwise
+         */
+        public Builder withSslCertificateValidation(boolean enabled) {
+            this.sslValidationEnabled = enabled;
+            return this;
+        }
+
+        /**
+         * Adds a certificate (.pem) to the trust store.<br>
+         * This allows tls secured communication with services that do not have a certificate issued by
+         * an official CA (certificate authority).
+         *
+         * @param trustedCertificate Public certificate.
+         */
+        public Builder withTrustedCertificate(File trustedCertificate) {
+            this.trustedCertificates.add(trustedCertificate);
+            return this;
+        }
+
+        /**
+         * Sets a provider for getting a backend specific bearer token that is injected as an
+         * authorization header to REST HTTP calls emitted by the client.
+         *
+         * @param bearerTokenProvider Provider for backend specific bearer token
+         */
+        public Builder withBearerTokenProvider(BearerTokenProvider bearerTokenProvider) {
+            this.bearerTokenProvider = Option.of(bearerTokenProvider);
+            return this;
+        }
+
+        protected Builder withThymusVCPClientBuilder(ThymusVCPClientBuilder thymusClientBuilder) {
+            this.thymusClientBuilder = thymusClientBuilder;
+            return this;
+        }
+
+        /**
+         * Builds and returns a new {@link ThymusVCClient} according to the given configuration.
+         *
+         * @throws CsHttpClientException If the client could not be instantiated.
+         */
+        public ThymusVCClient build() throws CsHttpClientException {
+            if (this.endpoints == null || this.endpoints.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "At least one Thymus service endpoint has to be provided.");
+            }
+            List<ThymusVCPClient> clients = Try.sequence(
+                            this.endpoints.stream().map(endpoint -> Try.of(() -> {
+                                        ThymusVCPClientBuilder b =
+                                                thymusClientBuilder
+                                                        .withEndpoint(endpoint)
+                                                        .withoutSslValidation(!this.sslValidationEnabled)
+                                                        .withTrustedCertificates(this.trustedCertificates);
+                                        this.bearerTokenProvider.forEach(p ->
+                                                b.withBearerToken(
+                                                        Option.of(p.getBearerToken(endpoint))));
+                                        return b.build();
+                                    }))
+                                    .collect(Collectors.toList()))
+                    .getOrElseThrow(CsHttpClientException::new)
+                    .toJavaList();
+            return new ThymusVCClient(clients);
+        }
     }
 
 }
