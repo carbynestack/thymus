@@ -33,22 +33,22 @@ thymus:
     replicaCount: 1
     service:
       port: 8080
-      annotations: []
+      annotations: [ ]
     image:
       registry: ghcr.io
       repository: carbynestack/thymus/policy-catalogue
       tag: latest
       pullPolicy: "IfNotPresent"
-      pullSecrets: []
+      pullSecrets: [ ]
     probes:
       liveness:
-          period: 10
-          initialDelay: 10
-          failureThreshold: 3
+        period: 10
+        initialDelay: 10
+        failureThreshold: 3
       readiness:
-          period: 10
-          initialDelay: 10
-          failureThreshold: 3
+        period: 10
+        initialDelay: 10
+        failureThreshold: 3
 
 # Overrides for the Kratos subchart
 kratos:
@@ -123,6 +123,13 @@ kratos:
                 hooks:
                   - hook: session
 
+          verification:
+            enabled: true
+            ui_url: http://172.18.1.128.sslip.io/iam/ui/verification
+            use: code
+            after:
+              default_browser_return_url: http://172.18.1.128.sslip.io/iam/ui/
+
       # Logging system configuration
       log:
         # If set will leak sensitive values (e.g. emails) in the logs.
@@ -174,6 +181,9 @@ kratos:
                       "password": {
                         "identifier": true
                       }
+                    },
+                    "verification": {
+                      "via": "email"
                     }
                   }
                 }
@@ -401,3 +411,17 @@ kratos-selfservice-ui-node:
 
   config:
     csrfCookieName: cookie_name
+
+# Mailslurper configuration
+mailslurper:
+  image:
+    registry: docker.io
+    repository: oryd/mailslurper
+    tag: latest-smtps
+    pullPolicy: "IfNotPresent"
+    pullSecrets: [ ]
+  service:
+    annotations: [ ]
+    uiPort: 4436
+    apiPort: 4437
+    smtpPort: 1025
