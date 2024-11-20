@@ -26,6 +26,7 @@ data:
     default tag.update := false
     default tag.delete := false
     default use := false
+    default execute := false
   owner-access.rego: |
     package carbynestack.def
 
@@ -78,3 +79,9 @@ data:
         programIds := split(input.tags[i].value, ",")
         programIds[_] == input.subject
     }
+  ephemeral-execute.rego: |
+    package carbynestack.def
+
+    import rego.v1
+
+    execute if input.playerCount >= 2
