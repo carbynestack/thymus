@@ -22,7 +22,7 @@ data:
     default read := false
     default delete := false
     default tag.read := false
-    default tag.write := false
+    default tag.create := false
     default tag.update := false
     default tag.delete := false
     default use := false
@@ -41,7 +41,7 @@ data:
     read if is_owner
     delete if is_owner
     tag.read if is_owner
-    tag.write if is_owner
+    tag.create if is_owner
     tag.update if is_owner
     tag.delete if is_owner
   donor-read.rego: |
