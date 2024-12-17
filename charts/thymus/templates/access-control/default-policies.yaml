@@ -6,6 +6,7 @@
 #
 
 # Default OPA policies
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -13,19 +14,77 @@ metadata:
   labels:
     opa.stackable.tech/bundle: "true"
 data:
-  donor-read.rego: |
-    package play
+  defaults.rego: |
+    package carbynestack.def
 
     import rego.v1
 
-    tags contains tag if {
-      tag := {"key": "derived-from", "value": input.inputs[_].owner}
-    }
-
     default read := false
+    default delete := false
+    default tag.read := false
+    default tag.create := false
+    default tag.update := false
+    default tag.delete := false
+    default use := false
+    default execute := false
+  owner-access.rego: |
+    package carbynestack.def
 
-    read if {
+    import rego.v1
+
+    is_owner if {
       some i
-      tags[i].key == "derived-from"
-      tags[i].value == input.subject
+      input.tags[i].key == "owner"
+      input.tags[i].value == input.subject
     }
+
+    read if is_owner
+    delete if is_owner
+    tag.read if is_owner
+    tag.create if is_owner
+    tag.update if is_owner
+    tag.delete if is_owner
+  donor-read.rego: |
+    package carbynestack.def
+
+    import rego.v1
+
+    tags := [
+      {
+        "key": "derived-from",
+        "value": concat(", ", {x |
+          some i
+          x := input.inputs[i].owner
+        })
+      }, {
+        "key": "owner",
+        "value": input.executor
+      }
+    ]
+
+    provided_input if {
+      some i
+      input.tags[i].key == "derived-from"
+      contributor := split(input.tags[i].value, ",")
+      trim(contributor[_], " ") == input.subject
+    }
+
+    read if provided_input
+    tag.read if provided_input
+  ephemeral-use.rego: |
+    package carbynestack.def
+
+    import rego.v1
+
+    use if {
+        some i
+        input.tags[i].key == "authorizedPrograms"
+        programIds := split(input.tags[i].value, ",")
+        programIds[_] == input.subject
+    }
+  ephemeral-execute.rego: |
+    package carbynestack.def
+
+    import rego.v1
+
+    execute if input.playerCount >= 2
