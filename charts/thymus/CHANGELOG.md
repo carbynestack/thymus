@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/carbynestack/thymus/compare/chart-v0.4.0...chart-v0.5.0) (2024-12-18)
+
+
+### Features
+
+* **chart:** add user email verification ([#35](https://github.com/carbynestack/thymus/issues/35)) ([9393715](https://github.com/carbynestack/thymus/commit/9393715d301aeff3aa698b0324f96b2a77a44d91))
+* **chart:** update default policies ([#36](https://github.com/carbynestack/thymus/issues/36)) ([b71fae2](https://github.com/carbynestack/thymus/commit/b71fae252ec77e6c4ad7ea916d6064f236efd211))
+
 ## [0.4.0](https://github.com/carbynestack/thymus/compare/chart-v0.3.0...chart-v0.4.0) (2024-11-13)
 
 
