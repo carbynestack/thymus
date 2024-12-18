@@ -54,6 +54,12 @@ data:
         "key": "derived-from",
         "value": concat(", ", {x |
           some i
+          x := input.inputs[i].secretId
+        })
+      }, {
+        "key": "contributors",
+        "value": concat(", ", {x |
+          some i
           x := input.inputs[i].owner
         })
       }, {
@@ -64,7 +70,7 @@ data:
 
     provided_input if {
       some i
-      input.tags[i].key == "derived-from"
+      input.tags[i].key == "contributors"
       contributor := split(input.tags[i].value, ",")
       trim(contributor[_], " ") == input.subject
     }
