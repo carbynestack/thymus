@@ -7,8 +7,6 @@
 
 # Create demo users
 {{- if .Values.thymus.users.enabled }}
-{{- $command := printf "curl -X POST -sf -H 'Content-Type: application/json' -d @/user-credentials/data.json http://%s-kratos-admin:80/admin/identities"
- (include "thymus.fullname" . ) -}}
 {{- range $index, $value := .Values.thymus.users.data }}
 ---
 apiVersion: v1
@@ -18,7 +16,7 @@ metadata:
 data:
   data.json: |
     {
-      "traits": {
+     "traits": {
         "email": "{{ $value.email }}"
       },
       "credentials": {
@@ -35,7 +33,7 @@ kind: Job
 metadata:
   name: "create-user-{{ $index }}"
 spec:
-  backoffLimit: 10
+  backoffLimit: 5
   template:
     spec:
       volumes:
@@ -44,11 +42,19 @@ spec:
             name: "user-credentials-{{ $index }}"
       containers:
         - name: add-user
-          image: curlimages/curl:8.8.0
+          image: pnnlmiscscripts/curl-jq
+          {{- $files := $.Files }}
           command:
             - "sh"
             - "-c"
-            - {{ $command | quote }}
+            - {{ $files.Get "scripts/create-user.sh" | quote | indent 14 }}
+          env:
+            - name: MAILSLURPER_ADDRESS
+              value: "{{ include "thymus.fullname" $ }}-mailslurper:{{ $.Values.mailslurper.service.apiPort }}"
+            - name: KRATOS_ADMIN_SERVICE_ADDRESS
+              value: {{ printf "%s-kratos-admin:%d" (include "thymus.fullname" $) (int $.Values.kratos.service.admin.port) }}
+            - name: KRATOS_PUBLIC_SERVICE_ADDRESS
+              value: {{ printf "%s-kratos-public:%d" (include "thymus.fullname" $) (int $.Values.kratos.service.public.port) }}
           volumeMounts:
             - name: user-credentials-volume
               mountPath: /user-credentials
