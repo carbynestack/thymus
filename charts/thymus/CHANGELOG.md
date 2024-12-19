@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/carbynestack/thymus/compare/chart-v0.6.0...chart-v0.6.1) (2024-12-19)
+
+
+### Bug Fixes
+
+* **chart:** add missing client scope "email" ([#40](https://github.com/carbynestack/thymus/issues/40)) ([d0fbc6f](https://github.com/carbynestack/thymus/commit/d0fbc6f3ad120040dceb9d8b0cac24ac70bd4108))
+
 ## [0.6.0](https://github.com/carbynestack/thymus/compare/chart-v0.5.0...chart-v0.6.0) (2024-12-19)
 
 
