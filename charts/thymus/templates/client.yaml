@@ -18,7 +18,7 @@ spec:
   responseTypes:
     - id_token
     - code
-  scope: "openid offline"
+  scope: "openid offline email"
   secretName: thymus-client-secret
   tokenEndpointAuthMethod: none
   skipConsent: true
