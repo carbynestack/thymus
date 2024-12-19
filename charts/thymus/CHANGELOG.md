@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/carbynestack/thymus/compare/chart-v0.5.0...chart-v0.6.0) (2024-12-19)
+
+
+### Features
+
+* **chart:** add contributor list to generated tags ([#38](https://github.com/carbynestack/thymus/issues/38)) ([27366e4](https://github.com/carbynestack/thymus/commit/27366e450ecb9055e027ac2a96bc5a7360981153))
+
 ## [0.5.0](https://github.com/carbynestack/thymus/compare/chart-v0.4.0...chart-v0.5.0) (2024-12-18)
 
 
