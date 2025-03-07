@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/carbynestack/thymus/compare/chart-v0.6.1...chart-v0.6.2) (2025-03-07)
+
+
+### Bug Fixes
+
+* **chart:** make virtualservice use defined gateway ([#42](https://github.com/carbynestack/thymus/issues/42)) ([fef7400](https://github.com/carbynestack/thymus/commit/fef7400510843a6f699a10f3f5dcd7790bdaba0e))
+
 ## [0.6.1](https://github.com/carbynestack/thymus/compare/chart-v0.6.0...chart-v0.6.1) (2024-12-19)
 
 
