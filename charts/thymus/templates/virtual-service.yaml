@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2024 - for information on the respective copyright owner
+# Copyright (c) 2024-2025 - for information on the respective copyright owner
 # see the NOTICE file and/or the repository https://github.com/carbynestack/thymus.
 #
 # SPDX-License-Identifier: Apache-2.0
@@ -14,7 +14,7 @@ spec:
   hosts:
     - "*"
   gateways:
-    - cs-service-gateway
+    - {{ .Values.thymus.gateway.metadata.name }}
   # The routes for Kratos and Hydra Public / Admin APIs
   # IMPORTANT: The order of the routes is important, as the first match will be used
   http:
